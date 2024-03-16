@@ -4,17 +4,31 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+const os = require("os");
+const hostname = os.hostname();
+console.log(hostname);
+
+const femaleAvatar = `${hostname}:${process.env.POST}/static/default/images/avatar-default-image-female.png`;
+const maleAvatar = `${hostname}:${process.env.POST}/static/default/images/avatar-default-image-male.png`;
+
 class Auth {
     async signUp(req, res) {
         try {
-            const { firstName, lastName, email, password } = req.body;
+            const { firstName, lastName, email, password, gender } = req.body;
 
             const hasExistedUser = await UserModel.findOne({ email });
             if (hasExistedUser) return res.status(400).json({ message: "User already exists" });
 
             const hashPassword = await bcrypt.hash(password, saltRounds);
 
-            const newUser = await UserModel.create({ firstName, lastName, email, password: hashPassword });
+            const newUser = await UserModel.create({
+                firstName,
+                lastName,
+                email,
+                password: hashPassword,
+                gender,
+                avatar: gender === "female" ? femaleAvatar : maleAvatar,
+            });
 
             // generate new tokens
             const refreshToken = generateRefreshToken(newUser._id);
@@ -36,6 +50,7 @@ class Auth {
                 lastName: newUser.lastName,
                 email: newUser.email,
                 token: accessToken,
+                gender,
                 message: "Sign up successfully",
             });
         } catch (error) {

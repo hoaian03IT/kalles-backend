@@ -9,7 +9,7 @@ const cors = require("cors");
 const express = require("express");
 
 const app = express();
-const port = 4000;
+const port = process.env.POST || 4000;
 
 // connect to database
 connectDB();
@@ -26,6 +26,9 @@ const corsOptions = {
     preflightContinue: false,
 };
 app.use(cors(corsOptions));
+
+// static files
+app.use("/static", express.static("public"));
 
 // config route
 router(app);
