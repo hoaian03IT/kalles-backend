@@ -5,6 +5,7 @@ const router = require("./src/router");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+
 const express = require("express");
 
 const app = express();
@@ -16,7 +17,15 @@ connectDB();
 app.use(bodyParser.urlencoded({ extended: true, limit: 1024 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({ credentials: true, methods: "*", origin: "http://localhost:3000" }));
+const corsOptions = {
+    credentials: true,
+    origin: "http://localhost:3000",
+    methods: ["GET", "PUT", "POST", "DELETE"],
+    allowedHeaders: "Content-Type,Authorization",
+    optionsSuccessStatus: 200,
+    preflightContinue: false,
+};
+app.use(cors(corsOptions));
 
 // config route
 router(app);

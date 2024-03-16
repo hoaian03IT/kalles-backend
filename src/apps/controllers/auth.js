@@ -1,4 +1,4 @@
-const { User, RefreshToken } = require("../models");
+const { UserModel, RefreshTokenModel } = require("../models");
 const { generateAccessToken, generateRefreshToken } = require("../../utils");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -9,12 +9,12 @@ class Auth {
         try {
             const { firstName, lastName, email, password } = req.body;
 
-            const hasExistedUser = await User.findOne({ email });
+            const hasExistedUser = await UserModel.findOne({ email });
             if (hasExistedUser) return res.status(400).json({ message: "User already exists" });
 
             const hashPassword = await bcrypt.hash(password, saltRounds);
 
-            const newUser = await User.create({ firstName, lastName, email, password: hashPassword });
+            const newUser = await UserModel.create({ firstName, lastName, email, password: hashPassword });
 
             // generate new tokens
             const refreshToken = generateRefreshToken(newUser._id);
@@ -29,7 +29,7 @@ class Auth {
                 expires: new Date(Date.now() + 30 * 24 * 3600000), // 30 days
             });
 
-            await RefreshToken.create({ token: refreshToken });
+            await RefreshTokenModel.create({ token: refreshToken });
 
             res.status(200).json({
                 firstName: newUser.firstName,
@@ -46,7 +46,7 @@ class Auth {
         try {
             const { email, password } = req.body;
 
-            const hasExistedUser = await User.findOne({ email });
+            const hasExistedUser = await UserModel.findOne({ email });
             if (!hasExistedUser) {
                 return res.status(400).json({ message: "Email or password is wrong" });
             }
@@ -67,7 +67,7 @@ class Auth {
                 expires: new Date(Date.now() + 30 * 24 * 3600000), // 30 days
             });
 
-            await RefreshToken.create({ token: refreshToken });
+            await RefreshTokenModel.create({ token: refreshToken });
 
             res.status(200).json({
                 firstName: hasExistedUser.firstName,
@@ -87,13 +87,13 @@ class Auth {
             if (!refreshToken) {
                 return res.status(401).json({ message: "Unauthorized 1" });
             }
-            const hasExistedRefreshToken = await RefreshToken.findOne({ token: refreshToken });
+            const hasExistedRefreshToken = await RefreshTokenModel.findOne({ token: refreshToken });
             if (!hasExistedRefreshToken) {
                 return res.status(401).json({ message: "Unauthorized 2" });
             }
-            await RefreshToken.deleteOne({ token: refreshToken });
+            await RefreshTokenModel.deleteOne({ token: refreshToken });
 
-            res.status(200).json({});
+            res.status(200).json({ message: "Sign out successfully" });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
@@ -107,12 +107,12 @@ class Auth {
                 return res.status(401).json({ message: "Unauthorized 1" });
             }
 
-            const hasExistedRefreshToken = await RefreshToken.findOne({ token: refreshToken });
+            const hasExistedRefreshToken = await RefreshTokenModel.findOne({ token: refreshToken });
             if (!hasExistedRefreshToken) {
                 return res.status(401).json({ message: "Unauthorized 2" });
             }
 
-            await RefreshToken.deleteOne({ token: refreshToken });
+            await RefreshTokenModel.deleteOne({ token: refreshToken });
 
             jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
                 if (err) return res.status(401).json({ message: "Unauthorized 3" });
@@ -120,7 +120,7 @@ class Auth {
                 const newRefreshToken = generateRefreshToken(user._id);
                 const accessToken = generateAccessToken(user._id);
 
-                await RefreshToken.create({ token: newRefreshToken });
+                await RefreshTokenModel.create({ token: newRefreshToken });
 
                 res.cookie("refresh-token", newRefreshToken, {
                     maxAge: 1000 * 60 * 60 * 24 * 30,

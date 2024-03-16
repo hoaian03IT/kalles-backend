@@ -1,7 +1,11 @@
-const User = require("./user");
-const RefreshToken = require("./refreshToken");
+const UserModel = require("./user");
+const RefreshTokenModel = require("./refreshToken");
+const ProductModel = require("./product");
+const CategoryModel = require("./category");
 
 module.exports = {
-    User,
-    RefreshToken,
+    UserModel,
+    RefreshTokenModel,
+    ProductModel,
+    CategoryModel,
 };
