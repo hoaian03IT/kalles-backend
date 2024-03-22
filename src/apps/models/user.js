@@ -18,6 +18,11 @@ const userSchema = new Schema(
             enum: { values: ["male", "female"], message: "{VALUE} is not supported" },
             required: true,
         },
+        role: {
+            type: String,
+            default: "customer",
+            enum: { values: ["customer", "admin"], message: "{VALUE} is not supported" },
+        },
         phoneNumber: { type: String, default: "" },
     },
     {

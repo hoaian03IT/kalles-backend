@@ -5,11 +5,14 @@ const router = require("./src/router");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const morgan = require("morgan");
 
 const express = require("express");
 
 const app = express();
 const port = process.env.POST || 4000;
+
+morgan("tiny");
 
 // connect to database
 connectDB();

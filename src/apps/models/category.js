@@ -9,6 +9,11 @@ const categorySchema = new Schema(
         img: { type: String, required: true },
     },
     {
+        methods: {
+            quantityProducts() {
+                return mongoose.model("Product").countDocuments({ _id: this._id });
+            },
+        },
         timestamps: true,
     }
 );

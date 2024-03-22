@@ -3,7 +3,31 @@ const { CategoryModel } = require("../models");
 class Category {
     async getAll(req, res) {
         try {
-            const categories = await CategoryModel.find({}).select(["name", "description", "_id", "img"]);
+            // const categories = await CategoryModel.find({}).select(["name", "description", "img", "key"]);
+            const categories = await CategoryModel.aggregate([
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "_id",
+                        foreignField: "category",
+                        as: "products",
+                    },
+                },
+                {
+                    $project: {
+                        name: "$name",
+                        description: "$description",
+                        img: "$img",
+                        key: "$key",
+                        productCount: { $size: "$products" },
+                    },
+                },
+                {
+                    $sort: {
+                        productCount: -1,
+                    },
+                },
+            ]);
             res.status(200).json({ categories: categories });
         } catch (error) {
             res.status(400).json({ message: error.message });

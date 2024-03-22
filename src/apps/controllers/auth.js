@@ -27,7 +27,7 @@ class Auth {
                 email,
                 password: hashPassword,
                 gender,
-                avatar: gender === "female" ? femaleAvatar : maleAvatar,
+                avatar: `http://${gender === "female" ? femaleAvatar : maleAvatar}`,
             });
 
             // generate new tokens
@@ -49,6 +49,8 @@ class Auth {
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
                 email: newUser.email,
+                avatar: newUser.avatar,
+                phoneNumber: newUser.phoneNumber,
                 token: accessToken,
                 gender,
                 message: "Sign up successfully",
@@ -88,6 +90,8 @@ class Auth {
                 firstName: hasExistedUser.firstName,
                 lastName: hasExistedUser.lastName,
                 email: hasExistedUser.email,
+                avatar: hasExistedUser.avatar,
+                phoneNumber: hasExistedUser.phoneNumber,
                 token: accessToken,
                 message: "Sign in successfully",
             });
