@@ -3,6 +3,7 @@ const ColorProductModel = require("../models/colorProduct");
 const SizeProductModel = require("../models/sizeProduct");
 const sizeProduct = require("../models/sizeProduct");
 const { model } = require("mongoose");
+const product = require("../models/product");
 
 async function insertColors(colorsRaw) {
     let colorIds = [];
@@ -121,7 +122,9 @@ class Product {
                 .skip(pageSize * (page - 1))
                 .limit(pageSize)
                 .sort({ ...sortOrder });
-            res.status(200).json({ products: products });
+
+            const countDocs = await ProductModel.countDocuments();
+            res.status(200).json({ products: products, page: page, pages: Math.round(countDocs / pageSize) });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
