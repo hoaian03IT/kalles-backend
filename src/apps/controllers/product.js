@@ -83,7 +83,17 @@ class Product {
                     : order === "featured"
                     ? { sold: -1 }
                     : { _id: 1 };
-            const sexFilter = sex === "unisex" ? { sex } : !!sex ? { $or: [{ sex }, { sex: "unisex" }] } : {};
+
+            // nếu sex là men thì vừa có sản phẩm cho men và unisex, tương ứng với women
+            // nếu sex là unisex thì chi có sản phẩm cho unisex
+            const sexFilter =
+                sex === "unisex"
+                    ? { sex }
+                    : sex === "men" || sex === "women"
+                    ? { $or: [{ sex }, { sex: "unisex" }] }
+                    : sex === "all"
+                    ? {}
+                    : { sex };
             const stockFilter =
                 stock === "in-stock" ? { stock: { $gt: 0 } } : stock === "out-stock" ? { stock: 0 } : {};
             const priceFilter =
@@ -123,8 +133,14 @@ class Product {
                 .limit(pageSize)
                 .sort({ ...sortOrder });
 
-            const countDocs = await ProductModel.countDocuments();
-            res.status(200).json({ products: products, page: page, pages: Math.round(countDocs / pageSize) });
+            const countDocs = await ProductModel.countDocuments({
+                ...categoryFilter,
+                ...sexFilter,
+                ...priceFilter,
+                ...queryFilter,
+                ...stockFilter,
+            });
+            res.status(200).json({ products: products, page: page, pages: Math.ceil(countDocs / pageSize) });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
