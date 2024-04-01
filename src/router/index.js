@@ -1,13 +1,13 @@
 const authRouter = require("./auth.router");
 const categoryRouter = require("./category.router");
 const productRouter = require("./product.router");
-const rateProductRouter = require("./rateProduct.router");
+const reviewRouter = require("./review");
 
 function router(app) {
     app.use("/auth", authRouter);
     app.use("/category", categoryRouter);
     app.use("/product", productRouter);
-    app.use("/rate", rateProductRouter);
+    app.use("/review", reviewRouter);
 }
 
 module.exports = router;

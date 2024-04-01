@@ -1,6 +1,6 @@
 const authController = require("./auth");
 const categoryController = require("./category");
 const productController = require("./product");
-const rateProductController = require("./rateProduct");
+const reviewController = require("./review");
 
-module.exports = { authController, categoryController, productController, rateProductController };
+module.exports = { authController, categoryController, productController, reviewController };

@@ -12,8 +12,6 @@ const express = require("express");
 const app = express();
 const port = process.env.POST || 4000;
 
-morgan("tiny");
-
 // connect to database
 connectDB();
 
@@ -35,6 +33,8 @@ app.use("/static", express.static("public"));
 
 // config route
 router(app);
+
+morgan(":method :url :status :res[content-length] - :response-time ms");
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

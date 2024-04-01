@@ -17,7 +17,6 @@ const productSchema = new Schema(
         sex: { type: String, required: true, enum: ["men", "women", "unisex"] },
         stock: { type: Number, required: true },
         sold: { type: Number, default: 0 },
-        feedbacks: [{ type: mongoose.Types.ObjectId, ref: "RateProduct" }],
     },
     {
         timestamps: true,

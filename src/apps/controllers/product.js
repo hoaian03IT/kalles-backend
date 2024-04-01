@@ -1,9 +1,5 @@
-const ProductModel = require("../models/product");
-const ColorProductModel = require("../models/colorProduct");
-const SizeProductModel = require("../models/sizeProduct");
-const sizeProduct = require("../models/sizeProduct");
 const { model } = require("mongoose");
-const product = require("../models/product");
+const { ReviewModel, SizeProductModel, ColorProductModel, ProductModel } = require("../models");
 
 async function insertColors(colorsRaw) {
     let colorIds = [];
@@ -149,19 +145,23 @@ class Product {
         try {
             const { idProduct } = req.params;
             const product = await ProductModel.findById(idProduct)
-                .select("category previewImages name description price discount colors sex stock sold feedbacks")
+                .select("category previewImages name description price discount colors sex stock sold")
                 .populate({ path: "category", select: "name key" })
                 .populate({
                     path: "colors",
                     select: "name hex sizes",
                     populate: { path: "sizes", select: "image name description" },
-                })
-                .populate({
-                    path: "feedbacks",
-                    select: "rate feedback owner",
-                    populate: { path: "owner", select: "lastName avatar" },
                 });
-            res.status(200).json({ product: product });
+
+            const totalRates = await ReviewModel.find({ product: idProduct }).select("rate");
+            const sumRate = totalRates.reduce((acc, curr) => acc + curr.rate, 0);
+
+            res.status(200).json({
+                product: {
+                    ...product._doc,
+                    rate: totalRates.length > 0 ? Math.fround(sumRate / totalRates.length).toFixed(1) : 0,
+                },
+            });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
