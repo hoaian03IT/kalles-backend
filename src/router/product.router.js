@@ -1,7 +1,7 @@
 const { productController } = require("../apps/controllers");
+const { authenticate } = require("../apps/middlewares");
+const checkAdminRole = require("../apps/middlewares/checkRole");
 const router = require("express").Router();
-const authenticate = require("../apps/middlewares/authenticate");
-const { checkAdminRole } = require("../apps/middlewares/checkRole");
 
 router.post("/create", authenticate, checkAdminRole, productController.createProduct);
 router.get("/filter", productController.filterProduct);

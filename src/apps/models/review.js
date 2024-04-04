@@ -9,6 +9,7 @@ const ReviewSchema = new Schema(
         content: { type: String, default: "" },
         owner: { type: mongoose.Types.ObjectId, ref: "User", required: true },
         email: { type: String, required: true },
+        photos: [{ type: String }],
     },
     {
         timestamps: true,

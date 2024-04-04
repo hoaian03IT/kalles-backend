@@ -15,8 +15,8 @@ const port = process.env.POST || 4000;
 // connect to database
 connectDB();
 
-app.use(bodyParser.urlencoded({ extended: true, limit: 1024 }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: "20mb" }));
+app.use(bodyParser.json({ limit: "20mb" }));
 app.use(cookieParser());
 const corsOptions = {
     credentials: true,
