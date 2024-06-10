@@ -5,7 +5,8 @@ const router = require("express").Router();
 
 router.post("/create", authenticate, checkAdminRole, productController.createProduct);
 router.get("/filter", productController.filterProduct);
-router.get("/details/:idProduct", productController.getDetailsProduct);
+router.get("/details/:productId", productController.getDetailsProduct);
 router.get("/highest-price", productController.getProductHighestPrice);
+router.get("/suggest/:categoryId", productController.getSuggestedProduct);
 
 module.exports = router;

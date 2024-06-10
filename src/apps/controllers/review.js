@@ -55,7 +55,7 @@ class Review {
             const rateFilter = Number(rate) !== -1 ? { rate } : {};
             const orderCreatedAt = sort === "oldest" ? { updatedAt: 1 } : { updatedAt: -1 };
             const reviews = await ReviewModel.find({ product, ...rateFilter })
-                .select("product title rate content owner photos")
+                .select("product title rate content owner photos updatedAt")
                 .populate({ path: "owner", select: "firstName lastName avatar" })
                 .skip(skip ? (page - 1) * nPage : 0)
                 .limit(nPage)

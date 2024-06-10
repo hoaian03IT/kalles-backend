@@ -61,7 +61,7 @@ class Product {
 
     async filterProduct(req, res) {
         try {
-            const { category, order, query, sex, price, pageSize = 8, page = 1, stock } = req.query;
+            const { category, order, query, sex = "all", price, pageSize = 8, page = 1, stock } = req.query;
             const categoryFilter = category && category !== "all" ? { category } : {};
             const sortOrder =
                 order === "asc"
@@ -110,13 +110,7 @@ class Product {
                       },
                   }
                 : {};
-            console.log({
-                ...categoryFilter,
-                ...sexFilter,
-                ...priceFilter,
-                ...queryFilter,
-                ...sortOrder,
-            });
+
             const products = await ProductModel.find({
                 ...categoryFilter,
                 ...sexFilter,
@@ -143,8 +137,8 @@ class Product {
     }
     async getDetailsProduct(req, res) {
         try {
-            const { idProduct } = req.params;
-            const product = await ProductModel.findById(idProduct)
+            const { productId } = req.params;
+            const product = await ProductModel.findById(productId)
                 .select("category previewImages name description price discount colors sex stock sold")
                 .populate({ path: "category", select: "name key" })
                 .populate({
@@ -153,7 +147,7 @@ class Product {
                     populate: { path: "sizes", select: "image name description" },
                 });
 
-            const totalRates = await ReviewModel.find({ product: idProduct }).select("rate");
+            const totalRates = await ReviewModel.find({ product: productId }).select("rate");
             const sumRate = totalRates.reduce((acc, curr) => acc + curr.rate, 0);
 
             res.status(200).json({
@@ -171,6 +165,21 @@ class Product {
         try {
             const highestPriceProduct = await ProductModel.find({}).sort({ price: -1 }).limit(1);
             res.status(200).json({ price: highestPriceProduct[0].price });
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    }
+
+    async getSuggestedProduct(req, res) {
+        const LIMIT_PRODUCT = 12;
+        try {
+            const { categoryId } = req.params;
+            const products = await ProductModel.find({ category: categoryId })
+                .sort({ sold: -1, discount: -1 })
+                .limit(LIMIT_PRODUCT)
+                .select('"name previewImages price discount sold"');
+
+            res.status(200).json({ products });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
