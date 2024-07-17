@@ -3,13 +3,12 @@ const { CategoryModel } = require("../models");
 class Category {
     async getAll(req, res) {
         try {
-            // const categories = await CategoryModel.find({}).select(["name", "description", "img", "key"]);
             const categories = await CategoryModel.aggregate([
                 {
                     $lookup: {
                         from: "products",
                         localField: "_id",
-                        foreignField: "category",
+                        foreignField: "category_id",
                         as: "products",
                     },
                 },
@@ -19,7 +18,7 @@ class Category {
                         description: "$description",
                         img: "$img",
                         key: "$key",
-                        productCount: { $size: "$products" },
+                        productCount: { $size: "$products" }, // $size: $product - độ dài của mảng products sau khi nối bảng
                     },
                 },
                 {

@@ -4,7 +4,7 @@ const { ReviewModel, OrderModel } = require("../models");
 class Review {
     async createReview(req, res) {
         try {
-            const { productId, title, content, rate, email, photos } = req.body;
+            const { productId, title, content, rate, email, photos = [] } = req.body;
             const { _id } = req.user;
 
             const hasReviewed = await ReviewModel.exists({ product: productId, owner: _id });
@@ -34,11 +34,11 @@ class Review {
             }
 
             const newReview = new ReviewModel({
-                product: productId,
+                product_id: productId,
                 title,
                 rate,
                 content,
-                owner: _id,
+                owner: "666ed327343e0874f2bd3a0d",
                 email,
                 photos,
             });
@@ -51,16 +51,16 @@ class Review {
 
     async fetchReviewsByProduct(req, res) {
         try {
-            const { product, nPage = 4, page = 1, rate = -1, skip = true, sort = "newest" } = req.query;
+            const { "product-id": productId, nPage = 4, page = 1, rate = -1, skip = true, sort = "newest" } = req.query;
             const rateFilter = Number(rate) !== -1 ? { rate } : {};
             const orderCreatedAt = sort === "oldest" ? { updatedAt: 1 } : { updatedAt: -1 };
-            const reviews = await ReviewModel.find({ product, ...rateFilter })
-                .select("product title rate content owner photos updatedAt")
+            const reviews = await ReviewModel.find({ product_id: productId, ...rateFilter })
+                .select("product_id title rate content owner photos updatedAt")
                 .populate({ path: "owner", select: "firstName lastName avatar" })
                 .skip(skip ? (page - 1) * nPage : 0)
                 .limit(nPage)
                 .sort(orderCreatedAt);
-            const countDocs = await ReviewModel.countDocuments({ product, ...rateFilter });
+            const countDocs = await ReviewModel.countDocuments({ product_id: productId, ...rateFilter });
             res.status(200).json({ reviews, pages: Math.ceil(countDocs / nPage), page: page });
         } catch (error) {
             res.status(400).json({ message: error.message });
@@ -69,9 +69,38 @@ class Review {
 
     async fetchTotalRate(req, res) {
         try {
-            const { product } = req.params;
-            const totalRate = await ReviewModel.find({ product: product }).select("rate");
+            const { productId } = req.params;
+            const totalRate = await ReviewModel.find({ product_id: productId }).select("rate");
             res.status(200).json({ totalRate });
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    }
+
+    async calculateRateOfProduct(req, res) {
+        const { productId } = req.params;
+        try {
+            const rate = await ReviewModel.aggregate([
+                {
+                    $match: {
+                        product_id: new mongoose.Types.ObjectId(productId),
+                    },
+                },
+                {
+                    $group: {
+                        _id: "$product_id",
+                        averageRate: { $avg: "$rate" },
+                    },
+                },
+                {
+                    $project: {
+                        averageRate: {
+                            $round: ["$averageRate", 1],
+                        },
+                    },
+                },
+            ]);
+            res.status(200).json({ rate: rate[0]?.averageRate || 0 });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }

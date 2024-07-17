@@ -3,8 +3,8 @@ const { Schema } = mongoose;
 
 const productSchema = new Schema(
     {
-        category: {
-            type: Schema.Types.ObjectId,
+        category_id: {
+            type: mongoose.Types.ObjectId,
             ref: "Category",
             required: true,
         },
@@ -13,10 +13,7 @@ const productSchema = new Schema(
         description: { type: String, required: true },
         price: { type: Number, required: true },
         discount: { type: Number, default: 0 },
-        colors: [{ type: mongoose.Types.ObjectId, ref: "ColorProduct" }],
         sex: { type: String, required: true, enum: ["men", "women", "unisex"] },
-        stock: { type: Number, required: true },
-        sold: { type: Number, default: 0 },
     },
     {
         timestamps: true,

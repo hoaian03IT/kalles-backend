@@ -7,6 +7,7 @@ const SizeProductModel = require("./sizeProduct");
 const ColorProductModel = require("./colorProduct");
 const OrderModel = require("./order");
 const OrderLineModel = require("./orderLine");
+const QuantityProductModel = require("./quantityProduct");
 
 module.exports = {
     UserModel,
@@ -18,4 +19,5 @@ module.exports = {
     ColorProductModel,
     OrderModel,
     OrderLineModel,
+    QuantityProductModel,
 };

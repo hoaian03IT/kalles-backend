@@ -11,7 +11,7 @@ const categorySchema = new Schema(
     {
         methods: {
             quantityProducts() {
-                return mongoose.model("Product").countDocuments({ _id: this._id });
+                return mongoose.model("Product").countDocuments({ category_id: this._id });
             },
         },
         timestamps: true,

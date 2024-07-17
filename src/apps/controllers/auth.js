@@ -6,7 +6,6 @@ const saltRounds = 10;
 
 const os = require("os");
 const hostname = os.hostname();
-console.log(hostname);
 
 const femaleAvatar = `${hostname}:${process.env.POST}/static/default/images/avatar-default-image-female.png`;
 const maleAvatar = `${hostname}:${process.env.POST}/static/default/images/avatar-default-image-male.png`;
