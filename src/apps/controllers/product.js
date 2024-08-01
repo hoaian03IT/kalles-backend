@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { ReviewModel, SizeProductModel, ColorProductModel, ProductModel, QuantityProductModel } = require("../models");
+const { validateNullOrUndefined } = require("../../utils/index");
 
 async function insertColors(colorsRaw, productId) {
     const colorIds = [];
@@ -140,7 +141,19 @@ class Product {
 
     async filterProduct(req, res) {
         try {
-            const { category, order, query, sex = "all", price, pageSize = 8, page = 1, stock } = req.query;
+            let { category, order, query, sex = "all", price, "page-size": pageSize = 8, page = 1, stock } = req.query;
+
+            // validate queries
+            category = validateNullOrUndefined(category);
+            order = validateNullOrUndefined(order);
+            query = validateNullOrUndefined(query);
+            sex = validateNullOrUndefined(sex);
+            price = validateNullOrUndefined(price);
+            pageSize = validateNullOrUndefined(pageSize);
+            page = validateNullOrUndefined(page);
+            stock = validateNullOrUndefined(stock);
+            // ----------------------------------------------------------------
+
             const categoryFilter = category && category !== "all" ? { category_id: category } : {};
             const sortOrder =
                 order === "asc"
@@ -166,11 +179,11 @@ class Product {
                     ? { sex }
                     : sex === "men" || sex === "women"
                     ? { $or: [{ sex }, { sex: "unisex" }] }
-                    : sex === "all"
-                    ? {}
-                    : { sex };
+                    : {};
+            // problems
             const stockFilter =
                 stock === "in-stock" ? { stock: { $gt: 0 } } : stock === "out-stock" ? { stock: 0 } : {};
+            // ----------------------------------------------------------------
             const priceFilter =
                 price && price !== "all"
                     ? {
@@ -189,6 +202,8 @@ class Product {
                       },
                   }
                 : {};
+
+            console.log({ ...categoryFilter, ...sexFilter, ...priceFilter, ...queryFilter, ...stockFilter });
 
             const products = await ProductModel.find({
                 ...categoryFilter,
@@ -350,6 +365,34 @@ class Product {
             res.status(200).json({ ...quantityProduct._doc });
         } catch (error) {
             res.status(400).json({ message: error.message });
+        }
+    }
+
+    async initStockOfProduct(req, res) {
+        try {
+            let products = await ProductModel.find({});
+            for (let product of products) {
+                let response = await QuantityProductModel.aggregate([
+                    {
+                        $match: {
+                            product_id: product._id,
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            total_quantity: { $sum: "$quantity" },
+                        },
+                    },
+                ]);
+
+                let stock = response[0].total_quantity ? response[0].total_quantity : 0;
+
+                await ProductModel.findByIdAndUpdate(product._id, { stock: stock });
+            }
+            res.status(200).send("success");
+        } catch (error) {
+            res.status(400).send(error.message);
         }
     }
 }

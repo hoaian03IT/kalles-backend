@@ -14,6 +14,7 @@ const productSchema = new Schema(
         price: { type: Number, required: true },
         discount: { type: Number, default: 0 },
         sex: { type: String, required: true, enum: ["men", "women", "unisex"] },
+        stock: { type: Number, required: true, default: 0 },
     },
     {
         timestamps: true,

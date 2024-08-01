@@ -9,5 +9,6 @@ router.get("/details/:productId", productController.getDetailsProduct);
 router.get("/highest-price", productController.getProductHighestPrice);
 router.get("/suggest/:categoryId", productController.getSuggestedProduct);
 router.get("/quantity-sold", productController.getQuantityAdnSoldProduct);
+router.get("/init-stock-product", productController.initStockOfProduct);
 
 module.exports = router;
