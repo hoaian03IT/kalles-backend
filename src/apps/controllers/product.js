@@ -170,6 +170,8 @@ class Product {
                     ? { discount: -1 }
                     : order === "featured"
                     ? { sold: -1 }
+                    : order === "top-rated"
+                    ? { rate: -1 }
                     : { _id: 1 };
 
             // nếu sex là men thì vừa có sản phẩm cho men và unisex, tương ứng với women
@@ -180,10 +182,8 @@ class Product {
                     : sex === "men" || sex === "women"
                     ? { $or: [{ sex }, { sex: "unisex" }] }
                     : {};
-            // problems
             const stockFilter =
                 stock === "in-stock" ? { stock: { $gt: 0 } } : stock === "out-stock" ? { stock: 0 } : {};
-            // ----------------------------------------------------------------
             const priceFilter =
                 price && price !== "all"
                     ? {
@@ -202,6 +202,8 @@ class Product {
                       },
                   }
                 : {};
+
+            console.log({ ...categoryFilter, ...sexFilter, ...priceFilter, ...queryFilter, ...stockFilter });
 
             const products = await ProductModel.find({
                 ...categoryFilter,
@@ -271,6 +273,7 @@ class Product {
                         price: 1,
                         discount: 1,
                         sex: 1,
+                        rate: 1,
                         colors: { _id: 1, product_id: 1, name: 1, hex: 1, images: 1, is_active: 1, sold: 1 },
                         sizes: { _id: 1, product_id: 1, name: 1, abbreviation: 1, description: 1, is_active: 1 },
                     },
@@ -295,29 +298,8 @@ class Product {
                 },
             ]);
 
-            const rate = await ReviewModel.aggregate([
-                {
-                    $match: {
-                        product_id: new mongoose.Types.ObjectId(productId),
-                    },
-                },
-                {
-                    $group: {
-                        _id: "$product_id",
-                        averageRate: { $avg: "$rate" },
-                    },
-                },
-                {
-                    $project: {
-                        averageRate: {
-                            $round: ["$averageRate", 1],
-                        },
-                    },
-                },
-            ]);
-
             res.status(200).json({
-                product: { ...detail[0], totalQuantity: 0, totalSold: 0, rate: 0, ...quantity[0], ...rate[0] },
+                product: { ...detail[0], totalQuantity: 0, totalSold: 0, ...quantity[0] },
             });
         } catch (error) {
             res.status(400).json({ message: error.message });
