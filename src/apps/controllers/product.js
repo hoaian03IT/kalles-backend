@@ -203,8 +203,6 @@ class Product {
                   }
                 : {};
 
-            console.log({ ...categoryFilter, ...sexFilter, ...priceFilter, ...queryFilter, ...stockFilter });
-
             const products = await ProductModel.find({
                 ...categoryFilter,
                 ...sexFilter,

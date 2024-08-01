@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { ReviewModel, OrderModel } = require("../models");
+const { ReviewModel, OrderModel, ProductModel } = require("../models");
 
 class Review {
     async createReview(req, res) {
@@ -103,6 +103,31 @@ class Review {
             res.status(200).json({ rate: rate[0]?.averageRate || 0 });
         } catch (error) {
             res.status(400).json({ message: error.message });
+        }
+    }
+
+    async initRateProduct(req, res) {
+        try {
+            let products = await ProductModel.find({});
+            for (let product of products) {
+                let review = await ReviewModel.aggregate([
+                    {
+                        $match: {
+                            product_id: product._id,
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            rate: { $avg: "$rate" },
+                        },
+                    },
+                ]);
+                await ProductModel.findByIdAndUpdate(product._id, { rate: review[0].rate || 0 });
+            }
+            res.status(200).send("success");
+        } catch (error) {
+            res.status(500).send(error.message);
         }
     }
 }

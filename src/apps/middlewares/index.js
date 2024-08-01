@@ -1,7 +1,7 @@
 const authenticate = require("./authenticate");
-const checkRole = require("./checkRole");
+const { checkAdminRole } = require("./checkRole");
 
 module.exports = {
     authenticate,
-    checkRole,
+    checkAdminRole,
 };

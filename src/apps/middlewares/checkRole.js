@@ -18,4 +18,4 @@ function checkAdminRole(req, res, next) {
     }
 }
 
-module.exports = checkAdminRole;
+module.exports = { checkAdminRole };
