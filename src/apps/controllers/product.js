@@ -203,8 +203,6 @@ class Product {
                   }
                 : {};
 
-            console.log({ ...categoryFilter, ...sexFilter, ...priceFilter, ...queryFilter, ...stockFilter });
-
             const products = await ProductModel.find({
                 ...categoryFilter,
                 ...sexFilter,
@@ -212,7 +210,7 @@ class Product {
                 ...queryFilter,
                 ...stockFilter,
             })
-                .select("name previewImages price discount sold")
+                .select("name previewImages price discount sold stock")
                 .skip(pageSize * (page - 1))
                 .limit(pageSize)
                 .sort({ ...sortOrder });
@@ -274,6 +272,7 @@ class Product {
                         discount: 1,
                         sex: 1,
                         rate: 1,
+                        stock: 1,
                         colors: { _id: 1, product_id: 1, name: 1, hex: 1, images: 1, is_active: 1, sold: 1 },
                         sizes: { _id: 1, product_id: 1, name: 1, abbreviation: 1, description: 1, is_active: 1 },
                     },
@@ -283,23 +282,8 @@ class Product {
                 },
             ]);
 
-            const quantity = await QuantityProductModel.aggregate([
-                {
-                    $match: {
-                        product_id: new mongoose.Types.ObjectId(productId),
-                    },
-                },
-                {
-                    $group: {
-                        _id: "$product_id",
-                        totalQuantity: { $sum: "$quantity" },
-                        totalSold: { $sum: "$sold" },
-                    },
-                },
-            ]);
-
             res.status(200).json({
-                product: { ...detail[0], totalQuantity: 0, totalSold: 0, ...quantity[0] },
+                product: { ...detail[0], totalSold: 0 },
             });
         } catch (error) {
             res.status(400).json({ message: error.message });
