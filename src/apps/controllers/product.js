@@ -94,7 +94,7 @@ class Product {
             newProduct.save();
             res.status(200).json({ product: newProduct });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -135,7 +135,7 @@ class Product {
 
             res.status(200).json({ title: "Success", message: "Update quantity successfully" });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -224,7 +224,7 @@ class Product {
             });
             res.status(200).json({ products: products, page: page, pages: Math.ceil(countDocs / pageSize) });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
     async getDetailsProduct(req, res) {
@@ -286,7 +286,7 @@ class Product {
                 product: { ...detail[0], totalSold: 0 },
             });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -295,7 +295,7 @@ class Product {
             const highestPriceProduct = await ProductModel.find({}).sort({ price: -1 }).limit(1);
             res.status(200).json({ price: highestPriceProduct[0].price });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -310,7 +310,7 @@ class Product {
 
             res.status(200).json({ products });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -328,7 +328,7 @@ class Product {
 
             res.status(200).json({ ...quantityProduct._doc });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 

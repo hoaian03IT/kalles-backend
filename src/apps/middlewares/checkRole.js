@@ -14,7 +14,7 @@ function checkAdminRole(req, res, next) {
         req.role = role;
         next();
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error." });
     }
 }
 

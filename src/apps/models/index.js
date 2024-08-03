@@ -8,6 +8,7 @@ const ColorProductModel = require("./colorProduct");
 const OrderModel = require("./order");
 const OrderLineModel = require("./orderLine");
 const QuantityProductModel = require("./quantityProduct");
+const WhitelistModel = require("./whitelist");
 
 module.exports = {
     UserModel,
@@ -20,4 +21,5 @@ module.exports = {
     OrderModel,
     OrderLineModel,
     QuantityProductModel,
+    WhitelistModel,
 };

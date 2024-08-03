@@ -29,7 +29,7 @@ class Category {
             ]);
             res.status(200).json({ categories: categories });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -43,7 +43,7 @@ class Category {
             const newCategory = await CategoryModel.create({ name, description, img, key });
             res.status(200).json({ category: newCategory });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 }

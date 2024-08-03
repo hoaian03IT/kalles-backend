@@ -55,7 +55,7 @@ class Auth {
                 message: "Sign up successfully",
             });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
     async signIn(req, res) {
@@ -95,7 +95,7 @@ class Auth {
                 message: "Sign in successfully",
             });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -113,7 +113,7 @@ class Auth {
 
             res.status(200).json({ message: "Sign out successfully" });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -148,7 +148,7 @@ class Auth {
                 res.status(200).json({ token: accessToken });
             });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 }

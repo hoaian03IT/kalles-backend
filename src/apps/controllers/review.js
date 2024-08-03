@@ -45,7 +45,7 @@ class Review {
             await newReview.save();
             res.status(200).json({ message: "Your review was submitted" });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -63,7 +63,7 @@ class Review {
             const countDocs = await ReviewModel.countDocuments({ product_id: productId, ...rateFilter });
             res.status(200).json({ reviews, pages: Math.ceil(countDocs / nPage), page: page });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -73,7 +73,7 @@ class Review {
             const totalRate = await ReviewModel.find({ product_id: productId }).select("rate");
             res.status(200).json({ totalRate });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
@@ -102,7 +102,7 @@ class Review {
             ]);
             res.status(200).json({ rate: rate[0]?.averageRate || 0 });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(500).json({ message: "Internal server error." });
         }
     }
 
