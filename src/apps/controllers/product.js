@@ -103,7 +103,6 @@ class Product {
             const MIN_QUANTITY = 0,
                 MAX_QUANTITY = 5000;
 
-            // quantities = [{sizeId, colorId, quantity}]
             const { productId, quantities } = req.body;
 
             if (productId === undefined)
@@ -273,6 +272,7 @@ class Product {
                         sex: 1,
                         rate: 1,
                         stock: 1,
+                        totalSold: 1,
                         colors: { _id: 1, product_id: 1, name: 1, hex: 1, images: 1, is_active: 1, sold: 1 },
                         sizes: { _id: 1, product_id: 1, name: 1, abbreviation: 1, description: 1, is_active: 1 },
                     },
@@ -283,7 +283,7 @@ class Product {
             ]);
 
             res.status(200).json({
-                product: { ...detail[0], totalSold: 0 },
+                product: { ...detail[0] },
             });
         } catch (error) {
             res.status(500).json({ message: "Internal server error." });
@@ -302,9 +302,12 @@ class Product {
     async getSuggestedProduct(req, res) {
         const LIMIT_PRODUCT = 12;
         try {
-            const { categoryId } = req.params;
-            const products = await ProductModel.find({ category_id: categoryId })
-                .sort({ sold: -1, discount: -1 })
+            const { category: categoryId, except: productId } = req.query;
+            const products = await ProductModel.find({
+                category_id: categoryId,
+                _id: { $ne: new mongoose.Types.ObjectId(productId) }, // $ne: except, $nin: exclude
+            })
+                .sort({ rate: -1, discount: -1 })
                 .limit(LIMIT_PRODUCT)
                 .select("name previewImages price discount sold");
 

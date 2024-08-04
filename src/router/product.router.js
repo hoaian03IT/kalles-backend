@@ -7,7 +7,7 @@ router.post("/create", [authenticate, checkAdminRole], productController.createP
 router.get("/filter", productController.filterProduct);
 router.get("/details/:productId", productController.getDetailsProduct);
 router.get("/highest-price", productController.getProductHighestPrice);
-router.get("/suggest/:categoryId", productController.getSuggestedProduct);
+router.get("/suggested-product", productController.getSuggestedProduct);
 router.get("/quantity-sold", productController.getQuantityAdnSoldProduct);
 router.get("/init-stock-product", productController.initStockOfProduct);
 
