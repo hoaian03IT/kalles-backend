@@ -4,6 +4,6 @@ const router = require("express").Router();
 
 router.get("/", [authenticate], whitelistController.getWhitelist);
 router.post("/add", [authenticate], whitelistController.addNew);
-router.delete("/remove", [authenticate], whitelistController.removeOne);
+router.delete("/remove/:productId", [authenticate], whitelistController.removeOne);
 
 module.exports = router;
