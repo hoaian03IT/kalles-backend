@@ -5,7 +5,13 @@ const OrderSchema = new Schema(
     {
         buyerId: { type: mongoose.Types.ObjectId, ref: "User" },
         paymentMethod: { type: String, required: true },
-        address: { type: String, required: true },
+        address: {
+            street: { type: String, required: true, trim: true },
+            city: { type: String, required: true, trim: true },
+            state: { type: String, required: true, trim: true },
+            postalCode: { type: String, required: true, trim: true },
+            country: { type: String, required: true, trim: true },
+        },
     },
     {
         timestamps: true,
