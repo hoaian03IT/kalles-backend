@@ -7,7 +7,8 @@ const OrderLineSchema = new Schema(
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
         order: { type: mongoose.Types.ObjectId, ref: "Order" },
-        deliveryStatus: { type: Boolean, required: true, default: false },
+        status: { type: String, default: "Pending", enums: ["Pending", "Shipping", "Delivered"] },
+        is_paid: { type: Boolean, default: false },
     },
     {
         timestamps: true,
