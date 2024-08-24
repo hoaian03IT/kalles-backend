@@ -23,7 +23,7 @@ class Review {
                 },
                 {
                     $match: {
-                        buyerId: new mongoose.Types.ObjectId(_id),
+                        buyer_id: new mongoose.Types.ObjectId(_id),
                         "orderlines.productId": new mongoose.Types.ObjectId(productId),
                     },
                 },

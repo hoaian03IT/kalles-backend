@@ -6,7 +6,6 @@ const ReviewModel = require("./review");
 const SizeProductModel = require("./sizeProduct");
 const ColorProductModel = require("./colorProduct");
 const OrderModel = require("./order");
-const OrderLineModel = require("./orderLine");
 const QuantityProductModel = require("./quantityProduct");
 const WhitelistModel = require("./whitelist");
 
@@ -19,7 +18,6 @@ module.exports = {
     SizeProductModel,
     ColorProductModel,
     OrderModel,
-    OrderLineModel,
     QuantityProductModel,
     WhitelistModel,
 };
