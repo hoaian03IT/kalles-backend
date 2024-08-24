@@ -20,7 +20,7 @@ class Whitelist {
                 { $addToSet: { product_ids: new mongoose.Types.ObjectId(productId) } }, // $addToSet ensures no duplicates >< $push can have duplicates
                 { new: true, upsert: true }
             );
-            res.status(200).json({ message: "Added successfully" });
+            res.status(200).json({ message: "Added to whitelist successfully" });
         } catch (error) {
             res.status(500).json({ message: "Internal server error." });
         }
@@ -29,7 +29,7 @@ class Whitelist {
     async removeOne(req, res) {
         try {
             const { _id: userId } = req.user;
-            const { productId } = req.body;
+            const { productId } = req.params;
 
             if (!productId) {
                 return res.status(404).send({ message: "{productId} cannot be empty" });
@@ -40,9 +40,9 @@ class Whitelist {
                 { $pull: { product_ids: productId } },
                 { new: true }
             );
-            res.status(200).json({ whitelist: record.product_ids });
+            res.status(200).json({ message: "Removed from whitelist successfully" });
         } catch (error) {
-            res.status(500).json({ message: "Internal server error." });
+            res.status(500).json({ message: error.message });
         }
     }
 
@@ -54,9 +54,9 @@ class Whitelist {
                 "product_ids",
                 "name previewImages price discount sold stock"
             );
-            res.status(200).json({ whitelist: recordset.product_ids });
+            res.status(200).json({ whitelist: recordset?.product_ids || [] });
         } catch (error) {
-            res.status(500).json({ message: "Internal server error." });
+            res.status(500).json({ message: error.message });
         }
     }
 }
