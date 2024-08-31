@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const OrderSchema = new Schema(
     {
         buyer_id: { type: mongoose.Types.ObjectId, ref: "User" },
-        paymentMethod: { type: String, required: true, enums: ["Cash", "Banking"] },
+        payment_method: { type: String, required: true, enums: ["Cash", "Banking"] },
         address: {
             street: { type: String, required: true, trim: true },
             city: { type: String, required: true, trim: true },

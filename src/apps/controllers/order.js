@@ -1,24 +1,6 @@
 const mongoose = require("mongoose");
 const { OrderModel, OrderLineModel } = require("../models");
 
-const createOrderLine = async (products, orderId) => {
-    try {
-        for (let product of products) {
-            await OrderLineModel.create({
-                product_id: new mongoose.Types.ObjectId(product.productId),
-                size_id: new mongoose.Types.ObjectId(product.sizeId),
-                color_id: new mongoose.Types.ObjectId(product.colorId),
-                quantity: product.quantity,
-                price: product.price,
-                status: product.status,
-                is_paid: product.isPaid,
-                order_id: new mongoose.Types.ObjectId(orderId),
-            });
-        }
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-};
 
 class Order {
     async createOrder(req, res) {
@@ -33,7 +15,7 @@ class Order {
 
                     await OrderModel.create({
                         buyer_id: new mongoose.Types.ObjectId(userId),
-                        paymentMethod: product.paymentMethod,
+                        payment_method: product.paymentMethod,
                         address: {
                             street,
                             city,
@@ -68,10 +50,54 @@ class Order {
             let orders = await OrderModel.find({ buyer_id: userId })
                 .skip(skip)
                 .limit(limit)
+                .select("color_id size_id quantity price status is_paid")
                 .populate("product_id", "name")
                 .populate("color_id", "name images")
                 .populate("size_id", "name");
             res.status(200).json({ orders });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    async getDetailedOrder(req, res) {
+        try {
+            const { _id: userId } = req.user;
+            const { id: orderId } = req.params;
+            let order = await OrderModel.findOne({
+                buyer_id: new mongoose.Types.ObjectId(userId),
+                _id: new mongoose.Types.ObjectId(orderId),
+            })
+                .select("payment_method address product_id color_id size_id quantity price status is_paid")
+                .populate("product_id", "name sex rate stock totalSold")
+                .populate("color_id", "name images hex")
+                .populate("size_id", "name abbreviation description");
+
+            res.status(200).json({ order });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    async deleteOrder(req, res) {
+        try {
+            const { _id: userId } = req.user;
+            const { id: orderId } = req.params;
+
+            let order = await OrderModel.findOne({
+                buyer_id: new mongoose.Types.ObjectId(userId),
+                _id: new mongoose.Types.ObjectId(orderId),
+            });
+
+            if (!order) {
+                return res.status(404).json({ message: "Order not found" });
+            }
+
+            if (order.status !== "Pending") {
+                return res.status(403).json({ message: "You cannot cancel order" });
+            }
+            await OrderModel.findByIdAndDelete(order._id);
+            res.status(200).json({ message: "Order was cancelled" });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
