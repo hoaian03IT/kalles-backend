@@ -10,11 +10,6 @@ const userSchema = new Schema(
         avatar: { type: String, required: true },
         gender: {
             type: String,
-            // validate: {
-            //     validator: function (value) {
-            //         return value === "male" || value === "female";
-            //     },
-            // },
             enum: { values: ["male", "female"], message: "{VALUE} is not supported" },
             required: true,
         },
@@ -24,6 +19,7 @@ const userSchema = new Schema(
             enum: { values: ["customer", "admin"], message: "{VALUE} is not supported" },
         },
         phoneNumber: { type: String, default: "" },
+        is_updated: { type: Boolean, required: true, default: false },
     },
     {
         timestamps: true,

@@ -91,6 +91,7 @@ class Auth {
                 email: hasExistedUser.email,
                 avatar: hasExistedUser.avatar,
                 phoneNumber: hasExistedUser.phoneNumber,
+                gender: hasExistedUser.gender,
                 token: accessToken,
                 message: "Sign in successfully",
             });
