@@ -5,5 +5,6 @@ const router = require("express").Router();
 router.get("/detail/:id", authenticate, orderController.getDetailedOrder);
 router.post("/create", authenticate, orderController.createOrder);
 router.get("/all", authenticate, orderController.getOrders);
+router.get("/shipping-cost", orderController.getShipCost);
 
 module.exports = router;

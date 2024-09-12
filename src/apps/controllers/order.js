@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { OrderModel, OrderLineModel } = require("../models");
 
-
 class Order {
     async createOrder(req, res) {
         try {
@@ -98,6 +97,30 @@ class Order {
             }
             await OrderModel.findByIdAndDelete(order._id);
             res.status(200).json({ message: "Order was cancelled" });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    async getShipCost(req, res) {
+        // chức năng này chỉ tạm thời
+        try {
+            // giả định cửa hàng ở Quảng Bình có id là 237
+            const provinceLocationId = 237;
+            const { province_id: provinceId } = req.query;
+            let quickDeliveryFee = 0,
+                expressDeliveryFee = 0;
+            if (provinceId === provinceLocationId) {
+                quickDeliveryFee = 1;
+                expressDeliveryFee = 0;
+            } else {
+                quickDeliveryFee = 3;
+                expressDeliveryFee = 2;
+            }
+            res.status(200).json([
+                { id: 1, name: "Quick Delivery", fee: quickDeliveryFee },
+                { id: 2, name: "Express Delivery", fee: expressDeliveryFee },
+            ]); // đơn vị: $
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
